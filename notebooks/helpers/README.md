@@ -530,3 +530,190 @@ plot_correlation_heatmap(crypto_data)
 results = perform_statistical_tests(crypto_data)
 print(results[results['Test Type'] == 'K-S Test'].head())
 ```
+
+---
+
+## Time Series Analysis Module (`time_series_analysis.py`)
+
+Comprehensive time series analysis functions for analyzing cryptocurrency trends, volatility, and returns.
+
+### Functions Available
+
+#### Return Calculations
+- `calculate_returns(crypto_data)`
+  - Calculates daily, weekly, and monthly percentage returns
+  - Daily_Return: (Price_t - Price_t-1) / Price_t-1 * 100
+  - Weekly_Return: 7-day percentage change
+  - Monthly_Return: 30-day percentage change
+  - Returns updated crypto_data dict with new columns
+
+#### Volatility Calculations
+- `calculate_volatility(crypto_data, window=30)`
+  - Calculates rolling standard deviation of daily returns
+  - Default 30-day rolling window
+  - Volatility_30 column = std dev of Daily_Return over 30 days
+  - Measures price stability/risk
+  - Returns updated crypto_data dict
+
+#### Volatility Summary
+- `get_volatility_summary(crypto_data, window=30)`
+  - Generates summary statistics for volatility
+  - Returns DataFrame with columns:
+    - Mean_Volatility: Average volatility across period
+    - Max_Volatility: Peak volatility (riskiest period)
+    - Min_Volatility: Lowest volatility (calmest period)
+    - Current_Volatility: Latest 30-day rolling volatility
+  - Sorted by mean volatility (highest first)
+
+#### Trend Analysis Using Linear Regression
+- `calculate_trend_analysis(crypto_data)`
+  - Analyzes price trends using linear regression
+  - Returns DataFrame with columns:
+    - Slope: Trend direction/strength (positive=uptrend, negative=downtrend)
+    - Trend: "Uptrend" or "Downtrend" classification
+    - R_squared: Fit quality (0-1, higher = better linear fit)
+    - Start_Price: Opening price of period
+    - End_Price: Closing price of period
+    - Total_Return_%: Overall percentage change
+  - Higher slope = stronger uptrend; more negative = stronger downtrend
+  - R_squared indicates quality of trend (R² > 0.7 = strong trend)
+
+#### Returns Summary
+- `get_returns_summary(crypto_data)`
+  - Comprehensive return statistics for each cryptocurrency
+  - Returns DataFrame with columns:
+    - Mean_Daily_Return_%: Average daily return
+    - Std_Daily_Return_%: Standard deviation of returns (volatility)
+    - Max_Daily_Return_%: Best single day return
+    - Min_Daily_Return_%: Worst single day return
+    - Sharpe_Ratio: Risk-adjusted return (return/volatility)
+    - Positive_Days_%: % of days with positive returns
+  - Sharpe Ratio: Higher = better risk-adjusted returns (> 0.5 is good)
+  - Win Rate: Higher % = more consistency in positive returns
+
+#### Visualization - Price & Volatility
+- `plot_price_and_volatility(crypto_data, crypto_name, trend_analysis=None)`
+  - Creates 2-panel plot for single cryptocurrency:
+    - Panel 1: Price with optional linear regression trend line
+    - Panel 2: Rolling 30-day volatility over time
+  - Shows price stability and trend strength visually
+  - Red dashed trend line indicates trend direction and slope
+
+#### Visualization - Returns Distribution
+- `plot_returns_distribution(crypto_data, num_cryptos=10)`
+  - Creates histogram grid showing daily returns distribution
+  - Displays 5 rows x 2 columns (10 cryptos per grid)
+  - Shows mean return line for each cryptocurrency
+  - Helps identify risk profiles and return characteristics
+
+### Usage Examples
+
+#### Complete Time Series Analysis Workflow
+```python
+import sys
+sys.path.append('./helpers')
+from time_series_analysis import (calculate_returns, calculate_volatility, 
+                                  get_volatility_summary, calculate_trend_analysis, 
+                                  get_returns_summary, plot_price_and_volatility, 
+                                  plot_returns_distribution)
+
+# 1. Calculate returns and volatility
+crypto_data = calculate_returns(crypto_data)
+crypto_data = calculate_volatility(crypto_data, window=30)
+
+# 2. Get volatility statistics
+volatility_df = get_volatility_summary(crypto_data, window=30)
+print("Most volatile cryptocurrencies:")
+print(volatility_df.head(10))
+
+# 3. Analyze trends
+trend_df = calculate_trend_analysis(crypto_data)
+print("\nStrongest uptrends:")
+print(trend_df.sort_values('Slope', ascending=False).head(10))
+
+# 4. Get returns summary
+returns_df = get_returns_summary(crypto_data)
+print("\nBest risk-adjusted returns (Sharpe Ratio):")
+print(returns_df.sort_values('Sharpe_Ratio', ascending=False).head(10))
+
+# 5. Visualize trends
+for crypto_name in list(crypto_data.keys())[:5]:
+    plot_price_and_volatility(crypto_data, crypto_name, trend_df)
+
+# 6. Analyze return distributions
+plot_returns_distribution(crypto_data, num_cryptos=10)
+```
+
+#### Quick Risk Assessment
+```python
+from time_series_analysis import get_volatility_summary, get_returns_summary
+
+# Identify stable vs risky assets
+volatility_df = get_volatility_summary(crypto_data)
+print("Least volatile (most stable):")
+print(volatility_df.nsmallest(5, 'Mean_Volatility'))
+
+print("\nMost volatile (highest risk):")
+print(volatility_df.nlargest(5, 'Mean_Volatility'))
+
+# Find best risk-adjusted returns
+returns_df = get_returns_summary(crypto_data)
+print("\nBest Sharpe ratios (best risk-adjusted returns):")
+print(returns_df.nlargest(5, 'Sharpe_Ratio'))
+```
+
+#### Trend Identification
+```python
+from time_series_analysis import calculate_trend_analysis
+
+trend_df = calculate_trend_analysis(crypto_data)
+
+# Strongest uptrends
+uptrends = trend_df[trend_df['Slope'] > 0].sort_values('Slope', ascending=False)
+print("Top 10 uptrends:")
+print(uptrends.head(10)[['Slope', 'Total_Return_%', 'R_squared']])
+
+# Strongest downtrends
+downtrends = trend_df[trend_df['Slope'] < 0].sort_values('Slope')
+print("\nTop 10 downtrends:")
+print(downtrends.head(10)[['Slope', 'Total_Return_%', 'R_squared']])
+```
+
+### Interpretation Guide
+
+**Volatility Metrics:**
+- Low volatility (<2%): Stable, low risk, lower returns potential
+- Medium volatility (2-5%): Moderate risk/reward
+- High volatility (>5%): High risk, high return potential
+- Current vs Mean: If current > mean = increasing volatility (higher risk)
+
+**Trend Analysis:**
+- Positive slope: Asset in uptrend (positive momentum)
+- Negative slope: Asset in downtrend (negative momentum)
+- R² > 0.7: Strong linear trend (reliable for trend following)
+- R² < 0.3: Weak/noisy trend (less reliable)
+- Steep slope: Strong trend (rapid gains/losses)
+- Shallow slope: Weak trend (slow movement)
+
+**Returns Summary:**
+- Sharpe Ratio > 1.0: Excellent risk-adjusted returns
+- Sharpe Ratio 0.5-1.0: Good risk-adjusted returns
+- Sharpe Ratio 0-0.5: Modest risk-adjusted returns
+- Sharpe Ratio < 0: Negative returns not compensating for risk
+- Win Rate > 50%: More profitable days than losing days
+- Win Rate < 50%: More losing days than profitable days
+
+**Practical Application:**
+```python
+# Identify ideal candidates for trend-following strategy
+good_trends = trend_df[(trend_df['Slope'] > 0) & (trend_df['R_squared'] > 0.7)]
+print(f"Found {len(good_trends)} cryptos with strong uptrends")
+
+# Find best balance of returns and stability
+good_risk_adjusted = returns_df[returns_df['Sharpe_Ratio'] > 0.5]
+print(f"Found {len(good_risk_adjusted)} cryptos with good risk-adjusted returns")
+
+# Identify stable, low-volatility assets
+stable_assets = volatility_df[volatility_df['Mean_Volatility'] < 2.0]
+print(f"Found {len(stable_assets)} stable cryptocurrencies")
+```

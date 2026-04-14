@@ -1,6 +1,6 @@
 # Linear Regression Model - Performance Report
 
-**Generated:** 2026-04-14 12:42:17
+**Generated:** 2026-04-14 14:41:12
 
 ## Executive Summary
 This report presents the comprehensive performance analysis of the Linear Regression model trained on 15 cryptocurrencies for price prediction using technical indicators and temporal features.

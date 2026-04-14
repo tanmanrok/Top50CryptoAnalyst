@@ -1,7 +1,7 @@
 {
     "model_type": "Linear Regression",
     "crypto_name": "litecoin",
-    "training_date": "2026-04-14T12:35:01.056095",
+    "training_date": "2026-04-14T14:41:12.607031",
     "version": "1.0",
     "hyperparameters": {
         "fit_intercept": true,

@@ -1,7 +1,7 @@
 {
     "model_type": "Linear Regression",
     "crypto_name": "solana",
-    "training_date": "2026-04-14T12:35:01.062356",
+    "training_date": "2026-04-14T14:41:12.612806",
     "version": "1.0",
     "hyperparameters": {
         "fit_intercept": true,

@@ -1,7 +1,7 @@
 {
     "model_type": "Linear Regression",
     "crypto_name": "maker",
-    "training_date": "2026-04-14T12:35:01.058164",
+    "training_date": "2026-04-14T14:41:12.609072",
     "version": "1.0",
     "hyperparameters": {
         "fit_intercept": true,

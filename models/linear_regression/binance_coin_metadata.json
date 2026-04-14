@@ -1,7 +1,7 @@
 {
     "model_type": "Linear Regression",
     "crypto_name": "binance_coin",
-    "training_date": "2026-04-14T12:35:01.041082",
+    "training_date": "2026-04-14T14:41:12.597016",
     "version": "1.0",
     "hyperparameters": {
         "fit_intercept": true,

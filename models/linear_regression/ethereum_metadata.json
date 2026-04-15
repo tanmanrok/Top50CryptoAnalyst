@@ -1,7 +1,7 @@
 {
     "model_type": "Linear Regression",
     "crypto_name": "ethereum",
-    "training_date": "2026-04-14T14:41:12.602473",
+    "training_date": "2026-04-15T10:19:36.188569",
     "version": "1.0",
     "hyperparameters": {
         "fit_intercept": true,

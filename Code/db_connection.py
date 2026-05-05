@@ -13,15 +13,15 @@ from psycopg2 import sql
 env_path = Path('.env')
 if env_path.exists():
     load_dotenv(env_path)
-    print("✅ .env file loaded")
+    print("[OK] .env file loaded")
 else:
     # Try parent directory (if running from subdirectory)
     parent_env = Path('..').resolve() / '.env'
     if parent_env.exists():
         load_dotenv(parent_env)
-        print(f"✅ .env file loaded from {parent_env}")
+        print(f"[OK] .env file loaded from {parent_env}")
     else:
-        print("⚠️  .env file not found - using environment variables only")
+        print("[WARNING] .env file not found - using environment variables only")
 
 # Database credentials (Local PostgreSQL)
 # Force IPv4 (127.0.0.1) to avoid IPv6 authentication issues
